@@ -325,7 +325,10 @@
   function initialLanguage(){
     const stored=localStorage.getItem(LANG_KEY);
     if(stored==='uk'||stored==='en')return stored;
-    return String(navigator.language||'').toLowerCase().startsWith('uk')?'uk':'en';
+    const systemLang=String(navigator.language||'').toLowerCase();
+    if(systemLang.startsWith('uk'))return 'uk';
+    if(systemLang.startsWith('en'))return 'en';
+    return 'uk';
   }
   let lang=initialLanguage();
   const tr=key=>I18N[lang][key]??key;
