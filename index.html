@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f3f4f6" />
+  <meta name="application-name" content="FOP Accounting" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="FOP Accounting" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <title>ФОП Облік — простий помічник для обліку доходів</title>
+  <meta id="metaDescription" name="description" content="Простий локальний помічник для обліку доходів ФОП, розрахунку податків по кварталах і за рік." />
+  <style>
+    :root{
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --text:#0d0d0f;
+      --muted:#7d7d86;
+      --line:#e8e8ec;
+      --black:#111114;
+      --soft:#f7f7f8;
+      --accent:#f14977;
+      --danger:#d92d20;
+      --success:#16865c;
+      --radius:22px;
+      --shadow:0 1px 2px rgba(0,0,0,.03),0 10px 30px rgba(0,0,0,.04);
+    }
+    *{box-sizing:border-box}
+    html{background:var(--bg)}
+    body{margin:0;color:var(--text);background:var(--bg);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:820px;margin:0 auto;padding:22px 16px 54px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+    .brand{min-width:0}.brand h1{margin:0;font-size:25px;letter-spacing:-.045em}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
+    .top-actions{display:flex;gap:8px}
+    .icon-btn,.btn{border:0;min-height:44px;border-radius:14px;font-weight:800;transition:transform .08s ease,background .15s ease}
+    .icon-btn:active,.btn:active{transform:scale(.98)}
+    .icon-btn{width:44px;background:var(--card);color:var(--text);box-shadow:var(--shadow);font-size:18px}
+    .btn{padding:11px 15px;background:var(--soft);color:var(--text)}
+    .btn.primary{background:var(--black);color:#fff}.btn.danger{background:#fff0f0;color:var(--danger)}.btn.link{background:transparent;color:var(--muted);padding:6px 8px;min-height:34px;font-weight:700}.btn.outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+    .periods{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:#e8e8eb;padding:4px;border-radius:16px;margin-bottom:14px}
+    .period{border:0;background:transparent;border-radius:12px;min-height:40px;color:#777780;font-weight:800}.period.active{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    .hero{background:var(--black);color:white;border-radius:28px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .hero-label{font-size:12px;color:#bdbdc5;font-weight:700}.hero-value{font-size:38px;font-weight:900;letter-spacing:-.055em;margin-top:5px;font-variant-numeric:tabular-nums;word-break:break-word}.hero-sub{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid #2b2b30}.hero-sub div{min-width:120px}.hero-sub span{display:block;color:#a9a9b2;font-size:11px}.hero-sub strong{display:block;margin-top:2px;font-size:15px;font-variant-numeric:tabular-nums}
+    .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.metric,.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}.metric{padding:16px;min-width:0}.metric span{display:block;color:var(--muted);font-size:11px;font-weight:700}.metric strong{display:block;margin-top:5px;font-size:19px;letter-spacing:-.035em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .card{padding:18px;margin-bottom:14px}.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}.section-head h2{font-size:17px;letter-spacing:-.025em;margin:0}.section-head p{font-size:11px;color:var(--muted);margin:3px 0 0}
+    .tax-list{display:grid;gap:11px}.tax-row{display:flex;justify-content:space-between;gap:16px;padding-bottom:10px;border-bottom:1px solid var(--line)}.tax-row:last-child{border:0;padding-bottom:0}.tax-row span{color:#595961}.tax-row strong{font-variant-numeric:tabular-nums}.tax-row.total{font-size:18px;font-weight:900;padding-top:2px}.tax-row.total span{color:var(--text)}
+    .quarter-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.quarter-card{border:0;background:var(--soft);border-radius:18px;padding:15px;text-align:left;color:var(--text)}.quarter-card strong{display:block;font-size:15px}.quarter-card .q-income{font-size:19px;font-weight:900;letter-spacing:-.035em;margin:8px 0 2px;font-variant-numeric:tabular-nums}.quarter-card small{color:var(--muted)}
+    .ops{display:grid}.month-group+.month-group{margin-top:16px}.month-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:5px 0 7px;border-bottom:1px solid var(--line)}.month-head strong{font-size:12px;letter-spacing:-.01em}.month-head span{color:var(--muted);font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}.op{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}.month-group .op:last-child{border-bottom:0}.op-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#eff8f3;color:var(--success);font-weight:900}.op.refund .op-icon{background:#fff1f3;color:var(--danger)}.op-title{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.op-meta{font-size:11px;color:var(--muted);margin-top:2px}.op-money{text-align:right;min-width:0}.op-money strong{display:block;font-size:15px;font-variant-numeric:tabular-nums}.op-money small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.op-actions{grid-column:2/4;display:flex;justify-content:flex-end;gap:4px;margin-top:-5px}.mini{border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:700;padding:3px 5px}.mini.delete{color:#b54747}
+    .empty{text-align:center;padding:28px 10px;color:var(--muted)}.empty .emoji{font-size:30px;margin-bottom:7px}.empty strong{display:block;color:var(--text);font-size:15px;margin-bottom:3px}
+    .onboarding{padding:18px;margin-bottom:14px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}.onboarding-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}.onboarding-head .emoji{font-size:24px;line-height:1}.onboarding-head h2{margin:0;font-size:17px;letter-spacing:-.025em}.onboarding-head p{margin:3px 0 0;color:var(--muted);font-size:11px}.onboarding-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.onboarding-step{background:var(--soft);border-radius:16px;padding:13px}.onboarding-step .num{width:25px;height:25px;border-radius:9px;background:var(--black);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900;margin-bottom:9px}.onboarding-step strong{display:block;font-size:12px;margin-bottom:3px}.onboarding-step span{display:block;color:var(--muted);font-size:10px;line-height:1.4}.onboarding-help{margin-top:11px;text-align:center;color:var(--muted);font-size:11px}.onboarding-help button{border:0;background:transparent;padding:2px 4px;color:var(--text);font-weight:900;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+    .floating{position:sticky;bottom:14px;display:flex;justify-content:center;pointer-events:none;margin-top:18px}.floating .btn{pointer-events:auto;min-width:210px;box-shadow:0 12px 34px rgba(0,0,0,.18)}
+    .hint{color:var(--muted);font-size:11px;text-align:center;margin-top:14px}
+    dialog{border:0;border-radius:26px;padding:0;width:min(540px,calc(100vw - 20px));max-height:88vh;box-shadow:0 30px 80px rgba(0,0,0,.28)}dialog::backdrop{background:rgba(0,0,0,.42);backdrop-filter:blur(2px)}
+    .modal{background:#fff}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:19px 20px 12px}.modal-head h3{margin:0;font-size:20px;letter-spacing:-.035em}.close{border:0;background:var(--soft);width:38px;height:38px;border-radius:12px;font-size:18px}.modal-body{padding:8px 20px 20px;overflow:auto;max-height:70vh}.modal-foot{padding:14px 20px 20px;display:flex;gap:8px}.modal-foot .btn{flex:1}
+    .form{display:grid;gap:14px}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:800;color:#4f4f57}.field input,.field select,.field textarea{width:100%;border:1px solid #dedee3;border-radius:14px;padding:12px 13px;min-height:46px;background:#fff;outline:none;color:var(--text)}.field textarea{resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#9d9da6;box-shadow:0 0 0 3px #f0f0f2}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-wrap{display:grid;grid-template-columns:1fr auto;gap:8px}.rate-wrap .btn{white-space:nowrap}.preview{background:var(--soft);border-radius:17px;padding:13px}.preview span{display:block;color:var(--muted);font-size:11px}.preview strong{display:block;font-size:22px;margin-top:3px;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+    .backup-zone{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}.backup-zone h4{margin:0;font-size:14px}.backup-zone p{font-size:11px;color:var(--muted);margin:5px 0 11px}.backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.subtle-action{border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:800;padding:6px 0;white-space:nowrap}.subtle-action:hover{color:var(--text)}
+    .help-intro{margin:0 0 14px;color:#4f4f57;font-size:13px}.help-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}.help-list li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:9px;align-items:start}.help-list .emoji{font-size:19px;line-height:1.35}.help-list strong{display:block;font-size:13px;margin-bottom:2px}.help-list span{display:block;color:var(--muted);font-size:12px;line-height:1.45}.help-caution{margin-top:16px;background:var(--soft);border-radius:17px;padding:13px 14px}.help-caution strong{display:block;font-size:13px;margin-bottom:5px}.help-caution p{margin:0;color:#606069;font-size:11px;line-height:1.55}.help-signoff{margin:14px 0 0;text-align:center;font-size:12px;font-weight:800;color:#4f4f57}
+    .setting-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.setting-row:last-child{border-bottom:0}.setting-row strong{display:block}.setting-row small{display:block;color:var(--muted);margin-top:2px}.switch{position:relative;width:48px;height:28px;flex:0 0 auto}.switch input{position:absolute;opacity:0}.switch i{position:absolute;inset:0;background:#d9d9de;border-radius:999px;transition:.2s}.switch i:after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}.switch input:checked+i{background:var(--black)}.switch input:checked+i:after{transform:translateX(20px)}
+    .danger-zone{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}.danger-zone p{font-size:11px;color:var(--muted);margin:7px 0 12px}.confirm-word{font-weight:900;letter-spacing:.08em}
+    .toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,10px);background:#111;color:white;padding:11px 14px;border-radius:13px;opacity:0;pointer-events:none;transition:.18s;z-index:1000;white-space:nowrap;max-width:calc(100vw - 30px);overflow:hidden;text-overflow:ellipsis}.toast.show{opacity:1;transform:translate(-50%,0)}
+    .lang-switch{display:grid;grid-template-columns:1fr 1fr;gap:3px;background:var(--card);padding:4px;border-radius:14px;box-shadow:var(--shadow)}.lang-btn{border:0;background:transparent;color:var(--muted);min-width:34px;height:36px;border-radius:10px;font-size:11px;font-weight:900}.lang-btn.active{background:var(--black);color:#fff}.footer{text-align:center;color:var(--muted);font-size:10px;margin:18px 0 2px}.hidden{display:none!important}
+    @media(max-width:620px){.app{padding:16px 12px 44px}.brand h1{font-size:22px}.top-actions{gap:6px}.lang-btn{min-width:30px;height:36px}.brand p{display:none}.metrics{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.quarter-grid{grid-template-columns:1fr}.hero-value{font-size:34px}.field-row{grid-template-columns:1fr}.rate-wrap{grid-template-columns:1fr}.period{font-size:12px}.topbar{align-items:flex-start}.top-actions{flex:0 0 auto}.op{grid-template-columns:42px minmax(0,1fr) auto}.backup-actions{grid-template-columns:1fr}.onboarding-steps{grid-template-columns:1fr}.onboarding-step{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:8px}.onboarding-step .num{grid-row:1/3;margin-bottom:0}.onboarding-step strong{align-self:end}}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <h1 data-i18n="appTitle">ФОП Облік</h1>
+      <p data-i18n="subtitle">2026 · 5% єдиний податок + 1% військовий збір</p>
+    </div>
+    <div class="top-actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="uk" type="button">UA</button>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+      </div>
+      <button class="icon-btn" id="helpBtn" type="button" aria-label="Допомога">?</button>
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="Налаштування">⚙</button>
+      <button class="icon-btn" id="addTopBtn" type="button" aria-label="Додати надходження">＋</button>
+    </div>
+  </header>
+
+  <nav class="periods" id="periodNav" aria-label="Період">
+    <button class="period" data-period="Q1" type="button">Q1</button>
+    <button class="period" data-period="Q2" type="button">Q2</button>
+    <button class="period" data-period="Q3" type="button">Q3</button>
+    <button class="period" data-period="Q4" type="button">Q4</button>
+    <button class="period" data-period="YEAR" type="button" data-i18n="year">Рік</button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-label" id="heroLabel"></div>
+    <div class="hero-value" id="heroValue">₴0,00</div>
+    <div class="hero-sub">
+      <div><span data-i18n="singleTax5">Єдиний податок 5%</span><strong id="heroTax">₴0,00</strong></div>
+      <div><span data-i18n="military1">Військовий збір 1%</span><strong id="heroMilitary">₴0,00</strong></div>
+      <div id="heroEsvBox" class="hidden"><span data-i18n="uscShort">ЄСВ</span><strong id="heroEsv">₴0,00</strong></div>
+    </div>
+  </section>
+
+  <section class="metrics">
+    <div class="metric"><span data-i18n="income">Дохід</span><strong id="metricIncome">₴0,00</strong></div>
+    <div class="metric"><span data-i18n="refunds">Повернення</span><strong id="metricRefunds">₴0,00</strong></div>
+    <div class="metric"><span data-i18n="adjustedIncome">Скоригований дохід</span><strong id="metricAdjusted">₴0,00</strong></div>
+  </section>
+
+  <section class="onboarding hidden" id="onboarding" aria-live="polite">
+    <div class="onboarding-head">
+      <div class="emoji">👋</div>
+      <div><h2 data-i18n="onboardingTitle">Почнімо з простого</h2><p data-i18n="onboardingIntro">Три кроки — і ваш облік уже працює.</p></div>
+    </div>
+    <div class="onboarding-steps">
+      <div class="onboarding-step"><div class="num">1</div><strong data-i18n="onboardingStep1Title">Додайте дохід</strong><span data-i18n="onboardingStep1Text">Вкажіть дату, валюту та суму надходження.</span></div>
+      <div class="onboarding-step"><div class="num">2</div><strong data-i18n="onboardingStep2Title">Перевірте податки</strong><span data-i18n="onboardingStep2Text">Застосунок одразу покаже орієнтовний резерв.</span></div>
+      <div class="onboarding-step"><div class="num">3</div><strong data-i18n="onboardingStep3Title">Іноді робіть backup</strong><span data-i18n="onboardingStep3Text">Резервна копія допоможе не втратити записи.</span></div>
+    </div>
+    <div class="onboarding-help"><span data-i18n="onboardingNeedHelp">Не впевнені, що вводити?</span> <button id="onboardingHelpBtn" type="button" data-i18n="onboardingOpenHelp">Відкрити допомогу ?</button></div>
+  </section>
+
+  <section class="card hidden" id="yearCard">
+    <div class="section-head"><div><h2 data-i18n="yearByQuarter">2026 по кварталах</h2><p data-i18n="tapQuarter">Натисніть квартал, щоб відкрити його.</p></div></div>
+    <div class="quarter-grid" id="quarterGrid"></div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <div><h2 id="opsTitle"></h2><p id="opsSubtitle"></p></div>
+      <button class="subtle-action" id="addRefundBtn" type="button"><span aria-hidden="true">↩</span> <span data-i18n="addRefund">Додати повернення</span></button>
+    </div>
+    <div class="ops" id="opsList"></div>
+    <div class="empty hidden" id="emptyState"><div class="emoji">₴</div><strong data-i18n="nothingYet">Поки порожньо</strong><span data-i18n="addFirstIncome">Додайте перше надходження.</span></div>
+  </section>
+
+  <section class="card">
+    <div class="section-head"><div><h2 data-i18n="calculation">Розрахунок</h2><p data-i18n="taxesFromAdjusted">Податки рахуються від скоригованого доходу.</p></div></div>
+    <div class="tax-list">
+      <div class="tax-row"><span data-i18n="singleTaxRow">Єдиний податок · 5%</span><strong id="taxBreakdown">₴0,00</strong></div>
+      <div class="tax-row"><span data-i18n="militaryRow">Військовий збір · 1%</span><strong id="milBreakdown">₴0,00</strong></div>
+      <div class="tax-row" id="esvBreakdownRow"><span data-i18n="uscShort">ЄСВ</span><strong id="esvBreakdown"></strong></div>
+      <div class="tax-row total"><span data-i18n="total">Разом</span><strong id="totalBreakdown">₴0,00</strong></div>
+    </div>
+  </section>
+
+  <div class="hint" data-i18n="localHint">Ваші дані зберігаються лише у цьому браузері. У Налаштуваннях можна створити резервну копію.</div>
+  <footer class="footer">© 2026 Yaroslav Patrin</footer>
+  <div class="floating"><button class="btn primary" id="addBtn" type="button">＋ <span data-i18n="addIncome">Додати надходження</span></button></div>
+</div>
+
+<dialog id="entryDialog">
+  <form class="modal" id="entryForm">
+    <div class="modal-head"><h3 id="entryTitle"></h3><button class="close" type="button" data-close="entryDialog">×</button></div>
+    <div class="modal-body">
+      <div class="form">
+        <div class="field-row">
+          <div class="field"><label for="entryDate" data-i18n="date">Дата</label><input id="entryDate" type="date" required></div>
+          <div class="field"><label for="entryCurrency" data-i18n="currency">Валюта</label><select id="entryCurrency"><option>USD</option><option>EUR</option><option>GBP</option><option>PLN</option><option>UAH</option></select></div>
+        </div>
+        <div class="field"><label for="entryAmount" data-i18n="amount">Сума</label><input id="entryAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="1000.00" required></div>
+        <div class="field" id="rateField"><label for="entryRate" data-i18n="nbuRate">Курс НБУ</label><div class="rate-wrap"><input id="entryRate" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="43.2500"><button class="btn" id="fetchRateBtn" type="button" data-i18n="getRate">Отримати курс</button></div><small id="rateStatus" style="color:var(--muted)"></small></div>
+        <div class="field"><label for="entryNote"><span data-i18n="note">Примітка</span> <span style="color:var(--muted);font-weight:600">· <span data-i18n="optional">необовʼязково</span></span></label><input id="entryNote" type="text" data-i18n-placeholder="notePlaceholder" placeholder="Наприклад: оплата за березень"></div>
+        <div class="preview"><span data-i18n="inUAH">У гривні</span><strong id="entryPreview">₴0,00</strong></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn" type="button" data-close="entryDialog" data-i18n="cancel">Скасувати</button><button class="btn primary" type="submit" data-i18n="save">Зберегти</button></div>
+  </form>
+</dialog>
+
+<dialog id="helpDialog">
+  <div class="modal">
+    <div class="modal-head"><h3 data-i18n="helpTitle">Як користуватися</h3><button class="close" type="button" data-close="helpDialog">×</button></div>
+    <div class="modal-body">
+      <p class="help-intro" data-i18n="helpIntro">Цей застосунок допомагає просто вести облік доходів ФОП та бачити орієнтовну суму податків за квартал і рік.</p>
+      <ul class="help-list">
+        <li><div class="emoji">🏦</div><div><strong data-i18n="helpStatementTitle">Почніть з банківської виписки</strong><span data-i18n="helpStatementText">Відкрийте виписку вашого ФОП-рахунку за потрібний період — наприклад, за місяць або квартал. Знайдіть фактичні надходження доходу від клієнтів і додайте кожне окремою операцією.</span></div></li>
+        <li><div class="emoji">💸</div><div><strong data-i18n="helpIncomeTitle">Додайте надходження</strong><span data-i18n="helpIncomeText">Для кожного надходження вкажіть дату, валюту та суму. Якщо дохід отримано в іноземній валюті — натисніть «Отримати курс», і застосунок спробує підставити курс НБУ на цю дату.</span></div></li>
+        <li><div class="emoji">🔁</div><div><strong data-i18n="helpNoDuplicateTitle">Не дублюйте рух коштів</strong><span data-i18n="helpNoDuplicateText">Обмін валюти, перекази між власними рахунками та виведення коштів не додавайте повторно як новий дохід.</span></div></li>
+        <li><div class="emoji">🧮</div><div><strong data-i18n="helpCalcTitle">Решту порахує застосунок</strong><span data-i18n="helpCalcText">Він розрахує дохід у гривні, 5% єдиного податку, 1% військового збору та ЄСВ, якщо ви його ввімкнули.</span></div></li>
+        <li><div class="emoji">↩️</div><div><strong data-i18n="helpRefundTitle">Повернення — лише за потреби</strong><span data-i18n="helpRefundText">Додавайте повернення тільки коли ви фактично повернули клієнту раніше отриманий дохід.</span></div></li>
+        <li><div class="emoji">📅</div><div><strong data-i18n="helpQuarterTitle">Перевіряйте квартал і рік</strong><span data-i18n="helpQuarterText">Перемикайтесь між Q1–Q4 або відкрийте Рік, щоб побачити загальний підсумок.</span></div></li>
+        <li><div class="emoji">💾</div><div><strong data-i18n="helpBackupTitle">Іноді робіть резервну копію</strong><span data-i18n="helpBackupText">Дані зберігаються у вашому браузері. Створюйте backup перед очищенням браузера або зміною пристрою.</span></div></li>
+      </ul>
+      <div class="help-caution">
+        <strong data-i18n="helpCautionTitle">⚠️ Важливо</strong>
+        <p data-i18n="helpCautionText">Це зручний помічник для самостійного обліку, а не заміна професійного бухгалтера чи офіційної податкової консультації. Перевіряйте важливі суми, ставки та дані перед поданням звітності або сплатою податків. Дані зберігаються локально, тому їх безпека та резервне копіювання залишаються під вашим контролем. Розробник не несе відповідальності за втрату даних, помилки у введених даних або фінансові чи податкові рішення, прийняті на основі розрахунків застосунку.</p>
+      </div>
+      <p class="help-signoff" data-i18n="helpSignoff">Користуйтесь спокійно, перевіряйте важливе — і нехай бухгалтерія займає менше часу 🙂</p>
+    </div>
+    <div class="modal-foot"><button class="btn primary" type="button" data-close="helpDialog" data-i18n="gotIt">Зрозуміло</button></div>
+  </div>
+</dialog>
+
+<dialog id="settingsDialog">
+  <div class="modal">
+    <div class="modal-head"><h3 data-i18n="settings">Налаштування</h3><button class="close" type="button" data-close="settingsDialog">×</button></div>
+    <div class="modal-body">
+      <div class="setting-row">
+        <div><strong data-i18n="includeUSC">Додавати ЄСВ</strong><small data-i18n="uscDefault">За замовчуванням не входить у підсумок.</small></div>
+        <label class="switch"><input id="includeEsv" type="checkbox"><i></i></label>
+      </div>
+      <div class="field hidden" id="esvAmountWrap" style="margin-top:14px"><label for="esvMonthly" data-i18n="uscMonthly">ЄСВ на місяць, грн</label><input id="esvMonthly" type="number" min="0" step="0.01" value="1902.34"></div>
+      <div class="backup-zone">
+        <h4 data-i18n="backup">Резервна копія</h4>
+        <p data-i18n="backupDesc">Завантажте приватну копію операцій і налаштувань або відновіть її пізніше на цьому чи іншому пристрої. Файл створюється та читається локально — нічого не завантажується на сервер.</p>
+        <div class="backup-actions">
+          <button class="btn outline" id="downloadBackupBtn" type="button">↓ <span data-i18n="downloadBackup">Завантажити копію</span></button>
+          <button class="btn outline" id="restoreBackupBtn" type="button">↑ <span data-i18n="restoreBackup">Відновити з копії</span></button>
+        </div>
+        <input id="restoreFileInput" type="file" accept="application/json,.json" class="hidden">
+      </div>
+      <div class="danger-zone">
+        <strong style="color:var(--danger)" data-i18n="startOver">Почати спочатку</strong>
+        <p data-i18n="deleteAllDesc">Видалить усі операції та налаштування з цього браузера. Дію не можна скасувати.</p>
+        <button class="btn danger" id="eraseBtn" type="button" data-i18n="deleteAllData">Видалити всі дані</button>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn primary" id="saveSettingsBtn" type="button" data-i18n="done">Готово</button></div>
+  </div>
+</dialog>
+
+<dialog id="deleteEntryDialog">
+  <div class="modal">
+    <div class="modal-head"><h3 data-i18n="deleteTransactionQ">Видалити операцію?</h3><button class="close" type="button" data-close="deleteEntryDialog">×</button></div>
+    <div class="modal-body"><p id="deleteEntrySummary" style="margin:0;color:var(--muted)"></p></div>
+    <div class="modal-foot"><button class="btn" type="button" data-close="deleteEntryDialog" data-i18n="cancel">Скасувати</button><button class="btn danger" id="deleteEntryConfirmBtn" type="button" data-i18n="delete">Видалити</button></div>
+  </div>
+</dialog>
+
+<dialog id="eraseDialog">
+  <div class="modal">
+    <div class="modal-head"><h3 data-i18n="deleteEverythingQ">Видалити все?</h3><button class="close" type="button" data-close="eraseDialog">×</button></div>
+    <div class="modal-body">
+      <p id="eraseInstruction" style="margin-top:0;color:var(--muted)"></p>
+      <div class="field"><input id="eraseConfirm" type="text" autocomplete="off"></div>
+    </div>
+    <div class="modal-foot"><button class="btn" type="button" data-close="eraseDialog" data-i18n="cancel">Скасувати</button><button class="btn danger" id="eraseConfirmBtn" type="button" disabled data-i18n="deletePermanently">Видалити назавжди</button></div>
+  </div>
+</dialog>
+
+<dialog id="restoreDialog">
+  <div class="modal">
+    <div class="modal-head"><h3 data-i18n="restoreBackupQ">Відновити резервну копію?</h3><button class="close" type="button" data-close="restoreDialog">×</button></div>
+    <div class="modal-body"><p id="restoreSummary" style="margin:0;color:var(--muted)"></p></div>
+    <div class="modal-foot"><button class="btn" type="button" data-close="restoreDialog" data-i18n="cancel">Скасувати</button><button class="btn primary" id="restoreConfirmBtn" type="button" data-i18n="restore">Відновити</button></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(()=>{
+  'use strict';
+  const YEAR=2026;
+  const STORAGE_KEY='fop_accounting_helper_v1';
+  const LANG_KEY='fop_accounting_language_v1';
+  const $=id=>document.getElementById(id);
+
+  const I18N={
+    uk:{
+      pageTitle:'ФОП Облік — простий помічник для обліку доходів', description:'Простий локальний помічник для обліку доходів ФОП, розрахунку податків по кварталах і за рік.', appTitle:'ФОП Облік', subtitle:'2026 · 5% єдиний податок + 1% військовий збір',
+      year:'Рік', singleTax5:'Єдиний податок 5%', military1:'Військовий збір 1%', uscShort:'ЄСВ', income:'Дохід', refunds:'Повернення', adjustedIncome:'Скоригований дохід',
+      yearByQuarter:'2026 по кварталах', tapQuarter:'Натисніть квартал, щоб відкрити його.', addRefund:'Додати повернення', nothingYet:'Поки порожньо', addFirstIncome:'Додайте перше надходження.',
+      onboardingTitle:'Почнімо з простого', onboardingIntro:'Три кроки — і ваш облік уже працює.', onboardingStep1Title:'Додайте дохід', onboardingStep1Text:'Вкажіть дату, валюту та суму надходження.', onboardingStep2Title:'Перевірте податки', onboardingStep2Text:'Застосунок одразу покаже орієнтовний резерв.', onboardingStep3Title:'Іноді робіть backup', onboardingStep3Text:'Резервна копія допоможе не втратити записи.', onboardingNeedHelp:'Не впевнені, що вводити?', onboardingOpenHelp:'Відкрити допомогу ?',
+      calculation:'Розрахунок', taxesFromAdjusted:'Податки рахуються від скоригованого доходу.', singleTaxRow:'Єдиний податок · 5%', militaryRow:'Військовий збір · 1%', total:'Разом', notIncluded:'Не враховується',
+      localHint:'Ваші дані зберігаються лише у цьому браузері. У Налаштуваннях можна створити резервну копію.', addIncome:'Додати надходження',
+      date:'Дата', currency:'Валюта', amount:'Сума', nbuRate:'Курс НБУ', getRate:'Отримати курс', manualRate:'Можна ввести вручну.', note:'Примітка', optional:'необовʼязково', notePlaceholder:'Наприклад: оплата за березень', inUAH:'У гривні', cancel:'Скасувати', save:'Зберегти',
+      settings:'Налаштування', includeUSC:'Додавати ЄСВ', uscDefault:'За замовчуванням не входить у підсумок.', uscMonthly:'ЄСВ на місяць, грн', backup:'Резервна копія',
+      backupDesc:'Завантажте приватну копію операцій і налаштувань або відновіть її пізніше на цьому чи іншому пристрої. Файл створюється та читається локально — нічого не завантажується на сервер.', downloadBackup:'Завантажити копію', restoreBackup:'Відновити з копії',
+      startOver:'Почати спочатку', deleteAllDesc:'Видалить усі операції та налаштування з цього браузера. Дію не можна скасувати.', deleteAllData:'Видалити всі дані', done:'Готово',
+      deleteTransactionQ:'Видалити операцію?', deleteEverythingQ:'Видалити все?', delete:'Видалити', deletePermanently:'Видалити назавжди', restoreBackupQ:'Відновити резервну копію?', restore:'Відновити',
+      taxReserveYear:'Резерв на податки за 2026 рік', taxReserveQuarter:'Резерв на податки', transactions:'Операції', transactionsYear:'Операції за 2026', allIncomeRefundsYear:'Усі надходження та повернення за рік', incomeRefunds:'Дохід і повернення',
+      taxes:'Податки', noNote:'Без примітки', rate:'курс', refund:'Повернення', edit:'Редагувати', deleteAction:'Видалити', newRefund:'Нове повернення', newIncome:'Нове надходження', editRefund:'Редагувати повернення', editIncome:'Редагувати надходження',
+      choose2026:'Оберіть дату у 2026 році.', gettingRate:'Отримую курс НБУ…', nbuRatePrefix:'Курс НБУ', rateFailed:'Не вдалося отримати курс автоматично. Введіть його вручну.', dateMust2026:'Дата має бути у 2026 році', checkAmountRate:'Перевірте суму та курс', saved:'Збережено', transactionDeleted:'Операцію видалено', settingsSaved:'Налаштування збережено',
+      backupDownloaded:'Резервну копію завантажено', backupInvalid:'Не вдалося прочитати цю резервну копію', backupRestored:'Резервну копію відновлено', allDeleted:'Усі дані видалено',
+      restoreContainsOne:'Ця копія містить 1 операцію. Відновлення замінить дані, які зараз зберігаються у цьому браузері.', restoreContainsManyA:'Ця копія містить ', restoreContainsManyB:' операцій. Відновлення замінить дані, які зараз зберігаються у цьому браузері.',
+      deleteWord:'ВИДАЛИТИ', confirmDeletePrefix:'Для підтвердження введіть', languageAria:'Мова', settingsAria:'Налаштування', addAria:'Додати надходження', helpAria:'Допомога',
+      helpTitle:'Як користуватися', helpIntro:'Цей застосунок допомагає просто вести облік доходів ФОП та бачити орієнтовну суму податків за квартал і рік.',
+      helpStatementTitle:'Почніть з банківської виписки', helpStatementText:'Відкрийте виписку вашого ФОП-рахунку за потрібний період — наприклад, за місяць або квартал. Знайдіть фактичні надходження доходу від клієнтів і додайте кожне окремою операцією.',
+      helpIncomeTitle:'Додайте надходження', helpIncomeText:'Для кожного надходження вкажіть дату, валюту та суму. Якщо дохід отримано в іноземній валюті — натисніть «Отримати курс», і застосунок спробує підставити курс НБУ на цю дату.',
+      helpNoDuplicateTitle:'Не дублюйте рух коштів', helpNoDuplicateText:'Обмін валюти, перекази між власними рахунками та виведення коштів не додавайте повторно як новий дохід.',
+      helpCalcTitle:'Решту порахує застосунок', helpCalcText:'Він розрахує дохід у гривні, 5% єдиного податку, 1% військового збору та ЄСВ, якщо ви його ввімкнули.',
+      helpRefundTitle:'Повернення — лише за потреби', helpRefundText:'Додавайте повернення тільки коли ви фактично повернули клієнту раніше отриманий дохід. Це не переказ між власними рахунками і не обмін валюти.',
+      helpQuarterTitle:'Перевіряйте квартал і рік', helpQuarterText:'Перемикайтесь між Q1–Q4 або відкрийте Рік, щоб побачити загальний підсумок.',
+      helpBackupTitle:'Іноді робіть резервну копію', helpBackupText:'Дані зберігаються у вашому браузері. Створюйте backup перед очищенням браузера або зміною пристрою.',
+      helpCautionTitle:'⚠️ Важливо', helpCautionText:'Це зручний помічник для самостійного обліку, а не заміна професійного бухгалтера чи офіційної податкової консультації. Перевіряйте важливі суми, ставки та дані перед поданням звітності або сплатою податків. Дані зберігаються локально, тому їх безпека та резервне копіювання залишаються під вашим контролем. Розробник не несе відповідальності за втрату даних, помилки у введених даних або фінансові чи податкові рішення, прийняті на основі розрахунків застосунку.',
+      helpSignoff:'Користуйтесь спокійно, перевіряйте важливе — і нехай бухгалтерія займає менше часу 🙂', gotIt:'Зрозуміло'
+    },
+    en:{
+      pageTitle:'FOP Accounting — Simple Income & Tax Helper', description:'A simple local helper for tracking FOP income and estimating quarterly and yearly taxes.', appTitle:'FOP Accounting', subtitle:'2026 · 5% single tax + 1% military levy',
+      year:'Year', singleTax5:'Single tax 5%', military1:'Military levy 1%', uscShort:'USC', income:'Income', refunds:'Refunds', adjustedIncome:'Adjusted income',
+      yearByQuarter:'2026 by quarter', tapQuarter:'Tap a quarter to open it.', addRefund:'Add refund', nothingYet:'Nothing here yet', addFirstIncome:'Add your first income entry.',
+      onboardingTitle:'Start with the basics', onboardingIntro:'Three quick steps and your bookkeeping is up and running.', onboardingStep1Title:'Add your income', onboardingStep1Text:'Enter the date, currency and amount you received.', onboardingStep2Title:'Check your taxes', onboardingStep2Text:'The app immediately shows your estimated tax reserve.', onboardingStep3Title:'Back up occasionally', onboardingStep3Text:'A backup helps protect your records if browser data is lost.', onboardingNeedHelp:'Not sure what to enter?', onboardingOpenHelp:'Open Help ?',
+      calculation:'Calculation', taxesFromAdjusted:'Taxes are calculated from adjusted income.', singleTaxRow:'Single tax · 5%', militaryRow:'Military levy · 1%', total:'Total', notIncluded:'Not included',
+      localHint:'Your data stays in this browser. Use Settings to create a backup if you want a portable copy.', addIncome:'Add income',
+      date:'Date', currency:'Currency', amount:'Amount', nbuRate:'NBU rate', getRate:'Get rate', manualRate:'You can enter it manually.', note:'Note', optional:'optional', notePlaceholder:'For example: March payment', inUAH:'In UAH', cancel:'Cancel', save:'Save',
+      settings:'Settings', includeUSC:'Include USC', uscDefault:'Not included in the total by default.', uscMonthly:'USC per month, UAH', backup:'Backup',
+      backupDesc:'Download a private copy of your entries and settings, or restore it later on this or another device. The file is created and read locally — nothing is uploaded.', downloadBackup:'Download backup', restoreBackup:'Restore backup',
+      startOver:'Start over', deleteAllDesc:'Deletes all transactions and settings from this browser. This action cannot be undone.', deleteAllData:'Delete all data', done:'Done',
+      deleteTransactionQ:'Delete transaction?', deleteEverythingQ:'Delete everything?', delete:'Delete', deletePermanently:'Delete permanently', restoreBackupQ:'Restore backup?', restore:'Restore',
+      taxReserveYear:'Tax reserve for 2026', taxReserveQuarter:'Tax reserve', transactions:'Transactions', transactionsYear:'2026 transactions', allIncomeRefundsYear:'All income and refunds for the year', incomeRefunds:'Income and refunds',
+      taxes:'Taxes', noNote:'No note', rate:'rate', refund:'Refund', edit:'Edit', deleteAction:'Delete', newRefund:'New refund', newIncome:'New income entry', editRefund:'Edit refund', editIncome:'Edit income',
+      choose2026:'Choose a date in 2026.', gettingRate:'Getting NBU rate…', nbuRatePrefix:'NBU rate', rateFailed:'Could not get the rate automatically. Enter it manually.', dateMust2026:'Date must be in 2026', checkAmountRate:'Check the amount and rate', saved:'Saved', transactionDeleted:'Transaction deleted', settingsSaved:'Settings saved',
+      backupDownloaded:'Backup downloaded', backupInvalid:'Could not read this backup', backupRestored:'Backup restored', allDeleted:'All data deleted',
+      restoreContainsOne:'This backup contains 1 transaction. Restoring it will replace the data currently stored in this browser.', restoreContainsManyA:'This backup contains ', restoreContainsManyB:' transactions. Restoring it will replace the data currently stored in this browser.',
+      deleteWord:'DELETE', confirmDeletePrefix:'To confirm, type', languageAria:'Language', settingsAria:'Settings', addAria:'Add income', helpAria:'Help',
+      helpTitle:'How to use', helpIntro:'This app helps you keep track of your FOP income and quickly estimate taxes for each quarter and the whole year.',
+      helpStatementTitle:'Start with your bank statement', helpStatementText:'Open your FOP business-account statement for the period you want to record — for example, a month or a quarter. Find the actual client income received and add each payment as a separate transaction.',
+      helpIncomeTitle:'Add your income', helpIncomeText:'For each payment, enter the date, currency and amount. If the income was received in a foreign currency, tap “Get rate” and the app will try to retrieve the NBU exchange rate for that date.',
+      helpNoDuplicateTitle:'Do not duplicate money movements', helpNoDuplicateText:'Currency exchange, transfers between your own accounts and withdrawals should not be entered again as new income.',
+      helpCalcTitle:'The app does the rest', helpCalcText:'It calculates income in UAH, 5% single tax, 1% military levy and USC if you enable it.',
+      helpRefundTitle:'Use refunds only when needed', helpRefundText:'Add a refund only when you actually return previously received income to a client. It is not an own-account transfer or currency exchange.',
+      helpQuarterTitle:'Check the quarter and year', helpQuarterText:'Switch between Q1–Q4 or open Year to see your overall summary.',
+      helpBackupTitle:'Make a backup from time to time', helpBackupText:'Your data is saved in this browser. Create a backup before clearing browser data or changing devices.',
+      helpCautionTitle:'⚠️ Good to know', helpCautionText:'This app is a simple accounting assistant, not a replacement for a professional accountant or official tax advice. Always double-check important amounts, tax rules and information before filing reports or making tax payments. Your records are stored locally, so keeping them safe and backed up remains under your control. The developer cannot be responsible for lost data, incorrect information entered by the user, or financial or tax decisions made based on the app’s calculations.',
+      helpSignoff:'Keep it simple, double-check what matters, and spend less time worrying about bookkeeping 🙂', gotIt:'Got it'
+    }
+  };
+
+  function initialLanguage(){
+    const stored=localStorage.getItem(LANG_KEY);
+    if(stored==='uk'||stored==='en')return stored;
+    return String(navigator.language||'').toLowerCase().startsWith('uk')?'uk':'en';
+  }
+  let lang=initialLanguage();
+  const tr=key=>I18N[lang][key]??key;
+  function formatUAH(value){return new Intl.NumberFormat(lang==='uk'?'uk-UA':'en-US',{style:'currency',currency:'UAH',currencyDisplay:'narrowSymbol',minimumFractionDigits:2,maximumFractionDigits:2}).format(value);}
+  function formatNum(value){return new Intl.NumberFormat(lang==='uk'?'uk-UA':'en-US',{minimumFractionDigits:0,maximumFractionDigits:4}).format(value);}
+
+  const defaultState=()=>({profile:{taxRate:5,militaryRate:1,esvMode:'unconfigured',esvMonthly:1902.34,esvCustom:0},entries:[],selectedPeriod:null});
+  function normalizeState(raw){const base=defaultState();if(!raw||typeof raw!=='object')return base;const profile={...base.profile,...(raw.profile||{})};return {...base,...raw,profile,entries:Array.isArray(raw.entries)?raw.entries:[]};}
+  function load(){try{return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'));}catch{return defaultState();}}
+  let state=load();
+  let editingId=null, pendingDeleteId=null, entryMode='income', pendingRestoreState=null, pendingRestoreLanguage=null;
+
+  function parseDate(s){const m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?{y:+m[1],m:+m[2],d:+m[3]}:null;}
+  function quarterOf(date){const d=parseDate(date);return d?`Q${Math.ceil(d.m/3)}`:'';}
+  function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+  function currentQuarter(){const d=new Date();return d.getFullYear()===YEAR?`Q${Math.ceil((d.getMonth()+1)/3)}`:'YEAR';}
+  let selected=currentQuarter();
+  function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:0;}
+  function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function periodFromLegacy(p){if(p==='YEAR')return 'YEAR';const m=String(p||'').match(/^Q([1-4])(?:-2026)?$/);return m?`Q${m[1]}`:currentQuarter();}
+  function save(){state.selectedPeriod=selected==='YEAR'?'YEAR':`${selected}-${YEAR}`;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));render();}
+  function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2100);}
+
+  function applyLanguage(){
+    document.documentElement.lang=lang;
+    document.title=tr('pageTitle');
+    $('metaDescription').setAttribute('content',tr('description'));
+    document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(I18N[lang][key]!=null)el.textContent=tr(key);});
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.setAttribute('placeholder',tr(el.dataset.i18nPlaceholder)));
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+    document.querySelector('.lang-switch').setAttribute('aria-label',tr('languageAria'));
+    $('periodNav').setAttribute('aria-label',lang==='uk'?'Період':'Period');
+    $('settingsBtn').setAttribute('aria-label',tr('settingsAria'));
+    $('helpBtn').setAttribute('aria-label',tr('helpAria'));
+    $('addTopBtn').setAttribute('aria-label',tr('addAria'));
+    if(!$('rateStatus').dataset.custom)$('rateStatus').textContent=tr('manualRate');
+    $('eraseInstruction').innerHTML=`${esc(tr('confirmDeletePrefix'))} <span class="confirm-word">${esc(tr('deleteWord'))}</span>.`;
+    $('eraseConfirm').setAttribute('placeholder',tr('deleteWord'));
+    $('eraseConfirm').value='';$('eraseConfirmBtn').disabled=true;
+    localStorage.setItem(LANG_KEY,lang);
+    render();
+  }
+
+  function relevantEntries(period){return state.entries.filter(e=>{const d=parseDate(e.date);if(!d||d.y!==YEAR)return false;return period==='YEAR'||quarterOf(e.date)===period;}).sort((a,b)=>b.date.localeCompare(a.date));}
+  function totals(period){const arr=relevantEntries(period);let income=0,refunds=0;arr.forEach(e=>{const uah=Math.abs(num(e.uah)||num(e.amount)*num(e.rate||1));if(e.type==='refund')refunds+=uah;else income+=uah;});const adjusted=Math.max(0,income-refunds);const tax=adjusted*.05;const military=adjusted*.01;const esv=state.profile.esvMode==='minimum'?num(state.profile.esvMonthly||1902.34)*(period==='YEAR'?12:3):0;return {income,refunds,adjusted,tax,military,esv,total:tax+military+esv,count:arr.length};}
+  function formatDate(s){const d=parseDate(s);return d?`${String(d.d).padStart(2,'0')}.${String(d.m).padStart(2,'0')}.${d.y}`:s;}
+  function monthName(month){return new Intl.DateTimeFormat(lang==='uk'?'uk-UA':'en-US',{month:'long'}).format(new Date(YEAR,month-1,1)).replace(/^./,c=>c.toUpperCase());}
+  function periodName(){return selected==='YEAR'?(lang==='uk'?'2026 рік':'2026 year'):`${selected} · 2026`;}
+
+  function render(){
+    document.querySelectorAll('.period').forEach(b=>b.classList.toggle('active',b.dataset.period===selected));
+    const t=totals(selected);
+    $('heroLabel').textContent=selected==='YEAR'?tr('taxReserveYear'):`${tr('taxReserveQuarter')} · ${periodName()}`;
+    $('heroValue').textContent=formatUAH(t.total);$('heroTax').textContent=formatUAH(t.tax);$('heroMilitary').textContent=formatUAH(t.military);$('heroEsvBox').classList.toggle('hidden',t.esv<=0);$('heroEsv').textContent=formatUAH(t.esv);
+    $('metricIncome').textContent=formatUAH(t.income);$('metricRefunds').textContent=formatUAH(t.refunds);$('metricAdjusted').textContent=formatUAH(t.adjusted);$('taxBreakdown').textContent=formatUAH(t.tax);$('milBreakdown').textContent=formatUAH(t.military);$('esvBreakdown').textContent=t.esv>0?formatUAH(t.esv):tr('notIncluded');$('totalBreakdown').textContent=formatUAH(t.total);
+    $('yearCard').classList.toggle('hidden',selected!=='YEAR');
+    if(selected==='YEAR'){$('quarterGrid').innerHTML=['Q1','Q2','Q3','Q4'].map(q=>{const x=totals(q);return `<button class="quarter-card" type="button" data-open-quarter="${q}"><strong>${q}</strong><div class="q-income">${formatUAH(x.adjusted)}</div><small>${tr('taxes')}: ${formatUAH(x.total)}</small></button>`;}).join('');document.querySelectorAll('[data-open-quarter]').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.openQuarter;save();}));}
+    $('onboarding').classList.toggle('hidden',state.entries.length>0);
+    const arr=relevantEntries(selected);$('opsTitle').textContent=selected==='YEAR'?tr('transactionsYear'):tr('transactions');$('opsSubtitle').textContent=selected==='YEAR'?tr('allIncomeRefundsYear'):`${tr('incomeRefunds')} · ${periodName()}`;$('emptyState').classList.toggle('hidden',arr.length>0);
+    const groups=[];arr.forEach(e=>{const d=parseDate(e.date);if(!d)return;let g=groups.find(x=>x.month===d.m);if(!g){g={month:d.m,entries:[]};groups.push(g);}g.entries.push(e);});
+    $('opsList').innerHTML=groups.map(g=>{let income=0,refunds=0;g.entries.forEach(e=>{const uah=Math.abs(num(e.uah)||num(e.amount)*num(e.rate||1));if(e.type==='refund')refunds+=uah;else income+=uah;});const subtotal=Math.max(0,income-refunds);const rows=g.entries.map(e=>{const isRefund=e.type==='refund';const note=esc(e.description||e.counterparty||tr('noNote'));const uah=Math.abs(num(e.uah)||num(e.amount)*num(e.rate||1));const fx=e.currency&&e.currency!=='UAH'?`${formatNum(Math.abs(num(e.amount)))} ${esc(e.currency)} · ${tr('rate')} ${formatNum(num(e.rate))}`:'UAH';return `<div class="op ${isRefund?'refund':''}"><div class="op-icon">${isRefund?'↩':'＋'}</div><div><div class="op-title">${note}</div><div class="op-meta">${formatDate(e.date)} · ${fx}</div></div><div class="op-money"><strong>${isRefund?'−':'+'}${formatUAH(uah)}</strong><small>${isRefund?tr('refund'):tr('income')}</small></div><div class="op-actions"><button class="mini" type="button" data-edit="${esc(e.id)}">${tr('edit')}</button><button class="mini delete" type="button" data-delete="${esc(e.id)}">${tr('deleteAction')}</button></div></div>`;}).join('');return `<div class="month-group"><div class="month-head"><strong>${esc(monthName(g.month))}</strong><span>${formatUAH(subtotal)}</span></div>${rows}</div>`;}).join('');
+    document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.edit)));document.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteEntry(b.dataset.delete)));
+  }
+
+  function setEntryDialogTexts(){$('entryTitle').textContent=editingId?(entryMode==='refund'?tr('editRefund'):tr('editIncome')):(entryMode==='refund'?tr('newRefund'):tr('newIncome'));}
+  function openNew(type='income'){editingId=null;entryMode=type==='refund'?'refund':'income';$('entryForm').reset();$('entryDate').value=today();if(parseDate($('entryDate').value)?.y!==YEAR)$('entryDate').value=`${YEAR}-01-01`;$('entryCurrency').value='USD';$('entryRate').value='';$('entryNote').value='';$('rateStatus').dataset.custom='';$('rateStatus').textContent=tr('manualRate');setEntryDialogTexts();updateRateField();updatePreview();$('entryDialog').showModal();}
+  function openEdit(id){const e=state.entries.find(x=>String(x.id)===String(id));if(!e)return;editingId=e.id;entryMode=e.type==='refund'?'refund':'income';$('entryDate').value=e.date;$('entryCurrency').value=e.currency||'UAH';$('entryAmount').value=Math.abs(num(e.amount));$('entryRate').value=e.currency==='UAH'?1:num(e.rate);$('entryNote').value=e.description||e.counterparty||'';$('rateStatus').dataset.custom='';$('rateStatus').textContent=tr('manualRate');setEntryDialogTexts();updateRateField();updatePreview();$('entryDialog').showModal();}
+  function deleteEntry(id){const entry=state.entries.find(e=>String(e.id)===String(id));if(!entry)return;pendingDeleteId=entry.id;const uah=Math.abs(num(entry.uah)||num(entry.amount)*num(entry.rate||1));const label=entry.type==='refund'?tr('refund'):tr('income');const note=entry.description||entry.counterparty||tr('noNote');$('deleteEntrySummary').textContent=`${label} · ${formatDate(entry.date)} · ${formatUAH(uah)} · ${note}`;$('deleteEntryDialog').showModal();}
+  function confirmDeleteEntry(){if(pendingDeleteId===null)return;const id=pendingDeleteId;pendingDeleteId=null;state.entries=state.entries.filter(e=>String(e.id)!==String(id));$('deleteEntryDialog').close();save();toast(tr('transactionDeleted'));}
+  function updateRateField(){const uah=$('entryCurrency').value==='UAH';$('rateField').classList.toggle('hidden',uah);if(uah)$('entryRate').value='1';}
+  function updatePreview(){const amount=Math.abs(num($('entryAmount').value));const rate=$('entryCurrency').value==='UAH'?1:num($('entryRate').value);$('entryPreview').textContent=formatUAH(amount*(rate||0));}
+  async function fetchRate(){const date=$('entryDate').value,currency=$('entryCurrency').value;if(!date||currency==='UAH')return;const d=parseDate(date);if(!d||d.y!==YEAR){$('rateStatus').dataset.custom='1';$('rateStatus').textContent=tr('choose2026');return;}const btn=$('fetchRateBtn');btn.disabled=true;$('rateStatus').dataset.custom='1';$('rateStatus').textContent=tr('gettingRate');try{const ymd=`${d.y}${String(d.m).padStart(2,'0')}${String(d.d).padStart(2,'0')}`;const r=await fetch(`https://bank.gov.ua/NBUStatService/v1/statdirectory/exchangenew?json&valcode=${encodeURIComponent(currency)}&date=${ymd}`,{cache:'no-store'});if(!r.ok)throw new Error('HTTP');const data=await r.json();if(!Array.isArray(data)||!data[0]||!Number.isFinite(+data[0].rate))throw new Error('No rate');$('entryRate').value=Number(data[0].rate).toFixed(4);$('rateStatus').textContent=`${tr('nbuRatePrefix')}: ${data[0].rate}`;updatePreview();}catch{$('rateStatus').textContent=tr('rateFailed');}finally{btn.disabled=false;}}
+
+  $('entryForm').addEventListener('submit',e=>{e.preventDefault();const date=$('entryDate').value,d=parseDate(date),amount=Math.abs(num($('entryAmount').value)),currency=$('entryCurrency').value,rate=currency==='UAH'?1:num($('entryRate').value);if(!d||d.y!==YEAR){toast(tr('dateMust2026'));return;}if(amount<=0||rate<=0){toast(tr('checkAmountRate'));return;}const type=entryMode==='refund'?'refund':'income';const existing=editingId?state.entries.find(x=>String(x.id)===String(editingId)):null;const entry={id:editingId||uid(),type,date,amount,currency,rate,uah:amount*rate,description:$('entryNote').value.trim(),counterparty:'',source:'manual',review:false};if(existing){const i=state.entries.indexOf(existing);state.entries[i]=entry;}else state.entries.push(entry);selected=quarterOf(date);$('entryDialog').close();save();toast(tr('saved'));});
+  ['entryAmount','entryRate','entryDate'].forEach(id=>$(id).addEventListener('input',updatePreview));$('entryCurrency').addEventListener('change',()=>{updateRateField();$('rateStatus').dataset.custom='';$('rateStatus').textContent=$('entryCurrency').value==='UAH'?'':tr('manualRate');updatePreview();});$('fetchRateBtn').addEventListener('click',fetchRate);$('deleteEntryConfirmBtn').addEventListener('click',confirmDeleteEntry);$('deleteEntryDialog').addEventListener('close',()=>{pendingDeleteId=null;});
+
+  function openSettings(){const included=state.profile.esvMode==='minimum';$('includeEsv').checked=included;$('esvMonthly').value=num(state.profile.esvMonthly)||1902.34;$('esvAmountWrap').classList.toggle('hidden',!included);$('settingsDialog').showModal();}
+  $('includeEsv').addEventListener('change',e=>$('esvAmountWrap').classList.toggle('hidden',!e.target.checked));$('saveSettingsBtn').addEventListener('click',()=>{state.profile.taxRate=5;state.profile.militaryRate=1;state.profile.esvMode=$('includeEsv').checked?'minimum':'unconfigured';state.profile.esvMonthly=Math.max(0,num($('esvMonthly').value)||1902.34);$('settingsDialog').close();save();toast(tr('settingsSaved'));});
+
+  function downloadBackup(){const payload={app:'FOP Accounting',version:2,year:YEAR,exportedAt:new Date().toISOString(),language:lang,state};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`fop-accounting-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(tr('backupDownloaded'));}
+  async function chooseRestoreFile(event){const file=event.target.files?.[0];event.target.value='';if(!file)return;try{const raw=JSON.parse(await file.text());const candidate=raw&&typeof raw==='object'&&raw.state?raw.state:raw;if(!candidate||typeof candidate!=='object'||!Array.isArray(candidate.entries))throw new Error('Invalid backup');pendingRestoreState=normalizeState(candidate);pendingRestoreLanguage=raw?.language==='uk'||raw?.language==='en'?raw.language:null;const count=pendingRestoreState.entries.length;$('restoreSummary').textContent=count===1?tr('restoreContainsOne'):`${tr('restoreContainsManyA')}${count}${tr('restoreContainsManyB')}`;if($('settingsDialog').open)$('settingsDialog').close();$('restoreDialog').showModal();}catch{pendingRestoreState=null;pendingRestoreLanguage=null;toast(tr('backupInvalid'));}}
+  function confirmRestore(){if(!pendingRestoreState)return;state=pendingRestoreState;pendingRestoreState=null;if(pendingRestoreLanguage){lang=pendingRestoreLanguage;localStorage.setItem(LANG_KEY,lang);}pendingRestoreLanguage=null;selected=periodFromLegacy(state.selectedPeriod);$('restoreDialog').close();save();applyLanguage();toast(tr('backupRestored'));}
+  $('downloadBackupBtn').addEventListener('click',downloadBackup);$('restoreBackupBtn').addEventListener('click',()=>$('restoreFileInput').click());$('restoreFileInput').addEventListener('change',chooseRestoreFile);$('restoreConfirmBtn').addEventListener('click',confirmRestore);$('restoreDialog').addEventListener('close',()=>{pendingRestoreState=null;pendingRestoreLanguage=null;});
+
+  $('eraseBtn').addEventListener('click',()=>{$('eraseConfirm').value='';$('eraseConfirmBtn').disabled=true;$('settingsDialog').close();$('eraseInstruction').innerHTML=`${esc(tr('confirmDeletePrefix'))} <span class="confirm-word">${esc(tr('deleteWord'))}</span>.`;$('eraseConfirm').placeholder=tr('deleteWord');$('eraseDialog').showModal();setTimeout(()=>$('eraseConfirm').focus(),100);});
+  $('eraseConfirm').addEventListener('input',e=>$('eraseConfirmBtn').disabled=e.target.value.trim().toUpperCase()!==tr('deleteWord'));
+  $('eraseConfirmBtn').addEventListener('click',()=>{if($('eraseConfirm').value.trim().toUpperCase()!==tr('deleteWord'))return;localStorage.removeItem(STORAGE_KEY);state=defaultState();selected=currentQuarter();$('eraseDialog').close();save();toast(tr('allDeleted'));});
+
+  document.querySelectorAll('.period').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.period;save();}));document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.close).close()));$('addBtn').addEventListener('click',()=>openNew('income'));$('addTopBtn').addEventListener('click',()=>openNew('income'));$('addRefundBtn').addEventListener('click',()=>openNew('refund'));$('helpBtn').addEventListener('click',()=>$('helpDialog').showModal());$('onboardingHelpBtn').addEventListener('click',()=>$('helpDialog').showModal());$('settingsBtn').addEventListener('click',openSettings);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.lang===lang)return;lang=b.dataset.lang;applyLanguage();}));
+
+  applyLanguage();
+})();
+</script>
+</body>
+</html>
